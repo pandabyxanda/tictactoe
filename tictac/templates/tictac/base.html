@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>TicTacToe {{ title }}</title>
+    <link type="text/css" href="{% static 'tictac/css/styles.css' %}" rel="stylesheet"/>
+    <link rel="icon" href="{% static 'tictac/images/favicon.ico' %}" type="image/x-icon"/>
+</head>
+
+<body>
+{% block mainmenu %}
+<header>
+    <div class="inner_header">
+<!--        <ul id="mainmenu" class="mainmenu">-->
+<!--            {% for m in menu %}-->
+<!--                {% if m.title == title %}-->
+<!--                    <li class="selected">{{ m.title }}</li>-->
+<!--                {% else %}-->
+<!--                    <li><a href="{% url m.url_name %}">{{ m.title }}</a></li>-->
+<!--                {%endif %}-->
+<!--            {% endfor %}-->
+<!--        </ul>-->
+    </div>
+
+    <div class="header_addition">
+    </div>
+
+</header>
+{% endblock mainmenu %}
+
+
+{% block content %}
+{% endblock content %}
+
+</body>
+</html>
+

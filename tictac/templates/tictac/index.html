@@ -1,0 +1,49 @@
+{% extends 'tictac/base.html' %}
+{% load static %}
+
+{% block content %}
+<main>
+    hello
+
+    <!--    <div class="grid-container">-->
+    <!--        <div>1</div>-->
+    <!--        <div>2</div>-->
+    <!--        <div>3</div>-->
+    <!--        <div>4</div>-->
+    <!--        <div>5</div>-->
+    <!--        <div>6</div>-->
+    <!--        <div>7</div>-->
+    <!--        <div>8</div>-->
+    <!--        <div>9</div>-->
+    <!--    </div>-->
+
+    <!--    <div class="grid_container_main_field">-->
+    <!--        <form class="" action="{% url 'home' %}" method="post">-->
+    <!--            {% csrf_token %}-->
+    <!--            <ul class="ul_main_field">-->
+    <!--                {% for i in fields %}-->
+    <!--                <li class="li_main_field">-->
+    <!--                    <button class="button_field_main_field" type="submit" name="change_word" value={{i}}>-->
+    <!--                        {{i}}-->
+    <!--                    </button>-->
+    <!--                </li>-->
+    <!--                {% endfor %}-->
+    <!--            </ul>-->
+    <!--        </form>-->
+    <!--    </div>-->
+
+    <div class="grid-outer">
+            <form class="grid-form" action="{% url 'home' %}" method="post">
+                {% csrf_token %}
+                {% for f in list_fields %}
+                <button class="button_field_main_field" type="submit" name="field_index" value={{f.index}}>
+                    {{f.value}}
+                    <!--                {{f.index}}-->
+                </button>
+                {% endfor %}
+            </form>
+    </div>
+
+
+</main>
+{% endblock content %}
