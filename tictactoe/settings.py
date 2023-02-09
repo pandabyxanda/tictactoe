@@ -20,11 +20,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-KEY = os.environ.get("TRANSLATOR_ENCRYPTION_KEY", default=None)
+KEY = os.environ.get("TTT_DJANGO_SECRET_KEY", default=None)
 if KEY:
     SECRET_KEY = str(KEY)
 else:
-    from secret_key import TRANSLATOR_ENCRYPTION_KEY as SECRET_KEY
+    from secret_key import TTT_DJANGO_SECRET_KEY as SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -74,7 +74,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'tictactoe.wsgi.application'
+
 ASGI_APPLICATION = 'tictactoe.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
