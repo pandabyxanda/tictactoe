@@ -1,0 +1,63 @@
+{% extends 'tictac/base.html' %}
+{% load static %}
+
+{% block content %}
+<main>
+
+    <div class="options-bar">
+
+        <form id="player_name_form" action="" method="post">
+            {% csrf_token %}
+
+            {% for f in form %}
+                {{ f }}
+                <div class="form-error">
+                    {{f.errors}}
+                </div>
+            {% endfor %}
+
+        </form>
+
+            <button id="automatch" onclick="automatch_clicked()">
+                Automatch
+            </button>
+
+
+
+        hello
+        Username: {{player.name}}
+        Unit to use: {{player.unit}}
+
+        <div id="game_status_text">
+            Game status: not ready, press 'automatch'
+        </div>
+    </div>
+
+
+    <div class="grid-outer">
+        <div class="grid-form">
+            <!--                {% csrf_token %}-->
+            {% for f in list_fields %}
+            <button class="button_field_allowed" id={{f.index}} onclick="Ffunc({{f.index}})">
+                {{f.value}}
+                <!--                {{f.index}}-->
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+
+
+
+
+    <script>
+        let list_fields = {{ list_fields|safe }};
+        let unit = "o";
+        let player_name = "{{ player.name }}";
+    </script>
+    <script src="{% static 'tictac/js/multiplayer.js' %}">
+    </script>
+
+
+
+</main>
+{% endblock content %}

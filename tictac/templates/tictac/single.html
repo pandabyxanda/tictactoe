@@ -1,0 +1,28 @@
+{% extends 'tictac/base.html' %}
+{% load static %}
+
+{% block content %}
+<main>
+
+    <div class="options-bar">
+        hello
+        Username: {{player.name}}
+        Unit to use: {{player.unit}}
+    </div>
+
+
+    <div class="grid-outer">
+        <div class="grid-form">
+            <!--                {% csrf_token %}-->
+            {% for f in list_fields %}
+            <button class="button_field_allowed" id={{f.index}} onclick="Ffunc({{f.index}})">
+                {{f.value}}
+                <!--                {{f.index}}-->
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+
+
+</main>
+{% endblock content %}

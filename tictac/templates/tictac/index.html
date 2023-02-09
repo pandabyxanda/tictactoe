@@ -4,6 +4,8 @@
 {% block content %}
 <main>
     hello
+    Username: {{player.name}}
+    Unit to use: {{player.unit}}
 
     <!--    <div class="grid-container">-->
     <!--        <div>1</div>-->
@@ -33,16 +35,135 @@
     <!--    </div>-->
 
     <div class="grid-outer">
-            <form class="grid-form" action="{% url 'home' %}" method="post">
-                {% csrf_token %}
-                {% for f in list_fields %}
-                <button class="button_field_main_field" type="submit" name="field_index" value={{f.index}}>
-                    {{f.value}}
-                    <!--                {{f.index}}-->
-                </button>
-                {% endfor %}
-            </form>
+        <div class="grid-form">
+            <!--                {% csrf_token %}-->
+            {% for f in list_fields %}
+            <button class="button_field_allowed" id={{f.index}} onclick="Ffunc({{f.index}})">
+                {{f.value}}
+                <!--                {{f.index}}-->
+            </button>
+            {% endfor %}
+        </div>
     </div>
+
+    <!--        <div class="grid-outer">-->
+    <!--            <form class="grid-form" action="{% url 'home' %}" method="post">-->
+    <!--                {% csrf_token %}-->
+    <!--                {% for f in list_fields %}-->
+    <!--                <button class="button_field_main_field" id={{f.index}} onclick="Ffunc({{f.index}})" type="submit" name="field_index" value={{f.index}}>-->
+    <!--                    {{f.value}}-->
+    <!--                    &lt;!&ndash;                {{f.index}}&ndash;&gt;-->
+    <!--                </button>-->
+    <!--                {% endfor %}-->
+    <!--            </form>-->
+    <!--    </div>-->
+
+
+    <script>
+
+
+        const rName = "tic_ind";
+        var unit = "{{ player.unit }}";
+        //var j_list_fields = JSON.parse("{{j_list_fields}}");
+        var list_fields = {{ list_fields|safe }};
+        console.log(list_fields)
+
+
+
+
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/'
+            + rName
+            + '/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            list_fields = data.list_fields
+            //console.log(list_fields);
+
+            for (i in list_fields) {
+                //console.log(list_fields[i]['value'] + ' ');
+                document.getElementById(i).innerHTML = list_fields[i]['value'];
+                //document.getElementById(i).className = "button_field_not_allowed"
+                if (list_fields[i]['value'] != " ") {
+                    document.getElementById(i).classList.add('button_field_not_allowed');
+                    //document.getElementById(i).classList.toggle('button_field_not_allowed');
+                };
+            };
+
+
+            //msg = data.message + '\n'
+            //document.getElementById("but_1").innerHTML = msg;
+
+
+            //var st = 'new text';
+            //document.getElementById("p_id_1").innerHTML = st;
+            //console.log(st);
+
+            //document.querySelector('#chat-log').value += (data.message + '\n');
+            //console.log("error on message")
+        };
+
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+
+        function Ffunc(x) {
+            if (list_fields[x]['value'] == " ") {
+                document.getElementById(x).innerHTML = unit;
+                //document.getElementById(x).innerHTML = list_fields[x]['value']+'+';
+                list_fields[x]['value'] = unit
+                chatSocket.send(JSON.stringify({'message':'1', 'list_fields': list_fields}));
+            };
+
+        }
+
+
+
+
+
+        /*
+        document.querySelector("#but_1").onclick = function(e) {
+            //const messageInputDom = document.querySelector('#chat-message-input');
+            const message = "hello yoyoyo"
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            //messageInputDom.value = '';
+
+
+        };
+
+
+
+
+        /*
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.value = '';
+
+
+        };
+        */
+
+
+    </script>
 
 
 </main>
