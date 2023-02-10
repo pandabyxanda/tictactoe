@@ -11,8 +11,8 @@
 </head>
 
 <body>
-{% block mainmenu %}
-<header>
+{% block main_sidebar %}
+<div class="main_sidebar">
     <ul id="mainmenu" class="mainmenu">
         {% for m in menu %}
             {% if m.title == title %}
@@ -22,12 +22,14 @@
             {%endif %}
         {% endfor %}
     </ul>
-</header>
-{% endblock mainmenu %}
+</div>
+{% endblock main_sidebar %}
 
 
 {% block content %}
 {% endblock content %}
+
+
 
 </body>
 </html>

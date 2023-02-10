@@ -45,6 +45,16 @@ function automatch_clicked() {
         socket_activated = 1;
         player = player_name;
 
+        chatSocket.onopen = function(event) {
+            console.log('socket onopen func called');
+            var message = {
+                type: "message",
+                text: "Hello, server123!"
+            };
+            chatSocket.send(JSON.stringify(message));
+        };
+
+
         chatSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
         };

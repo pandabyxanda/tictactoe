@@ -14,7 +14,10 @@ list_of_groups = [{'name': 'group1', 'players': 0, 'players_names': []}]
 
 class GameConsumer(WebsocketConsumer):
     def connect(self):
+        print()
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
+        sc_all = self.scope
+        print(f"{sc_all = }")
         # self.room_group_name = "chat_%s" % self.room_name
         group = list_of_groups[-1]
         if group['players'] == 2:
@@ -24,9 +27,6 @@ class GameConsumer(WebsocketConsumer):
         self.room_group_name = group['name']
         list_of_groups[-1]["players"] += 1
         list_of_groups[-1]["players_names"].append(self.room_name)
-
-
-        print()
         print("connect function called")
         print(f"{self.room_name = } ===={self.room_group_name = }")
 
