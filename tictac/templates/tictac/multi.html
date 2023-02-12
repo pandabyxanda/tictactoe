@@ -4,60 +4,122 @@
 {% block content %}
 <main>
 
-    <div class="options-bar">
-
-        <form id="player_name_form" action="" method="post">
-            {% csrf_token %}
-
-            {% for f in form %}
-                {{ f }}
-                <div class="form-error">
-                    {{f.errors}}
-                </div>
-            {% endfor %}
-
-        </form>
-
-            <button id="automatch" onclick="automatch_clicked()">
-                Automatch
-            </button>
 
 
-
-        hello
-        Username: {{player.name}}
-        Unit to use: {{player.unit}}
-
-        <div id="game_status_text">
-            Game status: not ready, press 'automatch'
+    <div class="grid-out">
+        <div class="grid-outer">
+            <div class="grid-inner">
+                {% for f in list_fields %}
+                <button class="button_field_not_allowed" id="field_{{f.index}}" onclick="Ffunc({{f.index}})">
+                    {{f.value}}
+                    <!--                {{f.index}}-->
+                </button>
+                {% endfor %}
+            </div>
         </div>
     </div>
-
-
-    <div class="grid-outer">
-        <div class="grid-form">
-            <!--                {% csrf_token %}-->
-            {% for f in list_fields %}
-            <button class="button_field_allowed" id={{f.index}} onclick="Ffunc({{f.index}})">
-                {{f.value}}
-                <!--                {{f.index}}-->
-            </button>
-            {% endfor %}
-        </div>
-    </div>
-
 
 
 
     <script>
         let list_fields = {{ list_fields|safe }};
-        let unit = "o";
         let player_name = "{{ player.name }}";
+        let session_key = "{{ session_key }}";
+
     </script>
     <script src="{% static 'tictac/js/multiplayer.js' %}">
     </script>
 
 
+<div class="right_sidebar">
+    <div class="right_sidebar_inner">
+        <ul>
+<!--            <li id="info_li_-1">11111</li>-->
+<!--            <li id="info_li_0">2222222222222222222222</li>-->
+            <li id="info_li_1">
+                <form id="player_name_form" action="" method="post">
+                    {% csrf_token %}
+                        {{ form }}
+                        <div class="form-error">
+                            {{f.errors}}
+                        </div>
+                </form>
+            </li>
+            <li id="info_li_2">
+                <button id="button_join_lobby" onclick="join_lobby_clicked()">
+                    Join lobby
+                </button>
+            </li>
+            <li id="info_li_3">
+<!--                <button id="button_automatch" onclick="button_automatch_clicked()">-->
+<!--                    Automatch-->
+<!--                </button>-->
+            </li>
+            <li id="info_li_4">...</li>
+            <li id="info_li_5">...</li>  <!-- vs-->
+            <li id="info_li_6">...</li>
+            <li id="info_li_7">
+<!--                <div id="game_status_text">-->
+<!--                    Game status: not ready, press 'automatch'-->
+<!--                </div>-->
+            </li>
+            <li id="info_li_8">...</li>
+            <li id="info_li_9">...</li>
+            <li id="info_li_10">...</li>
+            <li id="info_li_11">...</li>
+            <li id="info_li_12">...</li>
+            <li id="info_li_13">...</li>
+            <li id="info_li_14">...</li>
+            <li id="info_li_15">...</li>
+            <li id="info_li_16">...</li>
+            <li id="info_li_17">...</li>
+            <li id="info_li_18">...</li>
+        </ul>
 
+
+
+<!--        hello-->
+<!--        Username: {{player.name}}-->
+<!--        Unit to use: {{player.unit}}-->
+    </div>
+<!--    <ul id="mainmenu" class="mainmenu">-->
+<!--        {% for m in menu %}-->
+<!--            {% if m.title == title %}-->
+<!--                <li class="selected">{{ m.title }}</li>-->
+<!--            {% else %}-->
+<!--                <li><a href="{% url m.url_name %}">{{ m.title }}</a></li>-->
+<!--            {%endif %}-->
+<!--        {% endfor %}-->
+<!--    </ul>-->
+</div>
+
+<!--    <div class="options-bar">-->
+
+<!--        <form id="player_name_form" action="" method="post">-->
+<!--            {% csrf_token %}-->
+
+<!--            {% for f in form %}-->
+<!--                {{ f }}-->
+<!--                <div class="form-error">-->
+<!--                    {{f.errors}}-->
+<!--                </div>-->
+<!--            {% endfor %}-->
+
+<!--        </form>-->
+
+<!--            <button id="automatch" onclick="automatch_clicked()">-->
+<!--                Automatch-->
+<!--            </button>-->
+
+
+
+<!--        hello-->
+<!--        Username: {{player.name}}-->
+<!--        Unit to use: {{player.unit}}-->
+
+<!--        <div id="game_status_text">-->
+<!--            Game status: not ready, press 'automatch'-->
+<!--        </div>-->
+<!--    </div>-->
 </main>
 {% endblock content %}

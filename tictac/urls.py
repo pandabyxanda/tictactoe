@@ -6,6 +6,7 @@ urlpatterns = [
     path('', index, name='home'),
     path('single/', singleplayer, name='single'),
     path('multi/', multiplayer, name='multi'),
+    path('multi/<str:room_name>/', multiplayer, name='multi'),
     # path('collections/', collections, name='collections'),
     # path('test/', test, name='test'),
     path('about/', about, name='about'),

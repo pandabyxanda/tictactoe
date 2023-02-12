@@ -4,6 +4,7 @@ import random
 from django.shortcuts import render
 
 from .forms import *
+from .models import *
 
 length_of_side = 10
 number_of_cells = length_of_side ** 2
@@ -100,6 +101,21 @@ def singleplayer(request, *args, **kwargs):
 
 def multiplayer(request, *args, **kwargs):
     print()
+
+    print(f"{request.session = }")
+    # request.session['123'] = 123
+    if not request.session.session_key:
+        request.session.create()
+
+    # In case of deleting session
+    if not Session.objects.filter(session_key=request.session.session_key).exists():
+        request.session.create()
+
+    # session_key = request.session.session_key
+    #
+    # print(f"{session_key = }")
+
+
     form = PlayerNameForm(initial={'player_name': random.choice(default_names)})
 
     unit = ('x', 'y', 'o', 'w', 'e', 'h')
@@ -109,6 +125,7 @@ def multiplayer(request, *args, **kwargs):
         'list_fields': list_fields,
         'form': form,
         'player': player,
+        'session_key': request.session.session_key,
     }
     return render(request, 'tictac/multi.html', context=context)
 
