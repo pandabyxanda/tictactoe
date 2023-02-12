@@ -3,6 +3,10 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
+from .views import list_fields
+
+list_fields = list_fields
+
 from channels.layers import get_channel_layer
 
 # def get_group_names():
@@ -10,162 +14,323 @@ from channels.layers import get_channel_layer
 #     group_names = channel_layer.group_names()
 #     return group_names
 
-list_of_groups = [{'name': 'group1', 'players': 0, 'players_names': []}]
+list_of_groups = {'group_1': {'number_of_players': 0, 'players_ids': [], 'players_names': []}}
+free_group = 'group_1'
+players = []
+
+
+class LobbyConsumer(WebsocketConsumer):
+    def connect(self):
+        print()
+        print('Consumer. Connecting to lobby')
+
+        self.room_name = 'multi'
+        self.room_group_name = 'multi'
+        async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
+        self.accept()
+
+    def disconnect(self, close_code):
+        print("Consumer. Disconnecting from lobby")
+        # session_lazy_obj = self.scope.get('session')
+
+        data = self.scope
+        print(f"{data = }")
+
+        session_id = self.scope.get('cookies').get('sessionid')
+        if session_id in [x['session_key'] for x in players]:
+            players.pop([x for x in range(0, len(players)) if players[x]['session_key'] == session_id][0])
+
+        async_to_sync(self.channel_layer.group_send)(
+            self.room_group_name, {"type": "lobby_message", 'players': players}
+        )
+        # Leave room group
+        async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
+        print(f"{players = }")
+
+    # Receive message from WebSocket
+    def receive(self, text_data):
+
+        # session_lazy_obj = self.scope.get('session')
+        # print(f"{session_lazy_obj = }")
+        print("Consumer. Receiving data from WebSocket1")
+        text_data_json = json.loads(text_data)
+        print(f"{text_data_json = }")
+        if text_data_json['session_key'] not in [x['session_key'] for x in players]:
+            players.append({'name': text_data_json['player_name'],
+                            'id': text_data_json['id'],
+                            'session_key': text_data_json['session_key'],
+                            })
+        else:
+            print("Player with same id has already joined lobby")
+
+        # Send message to room group
+        async_to_sync(self.channel_layer.group_send)(
+            self.room_group_name, {"type": "lobby_message", 'players': players}
+        )
+
+    # Receive message from room group
+    def lobby_message(self, event):
+        print("Consumer. Sending data to all ws")
+        # message = event["message"]
+        print(f"{event = }")
+        # message = event["message"]
+        # if event.get("status") == "game started":
+        #     print(f"{event.get('status') = }")
+        #     print(f"{event.get('players_names') = }")
+        #     self.send(text_data=json.dumps({'status': "game started", 'qqq': '222', 'players_names': event.get("players_names")}))
+        # else:
+        #     list_fields = event["list_fields"]
+        #     move = event["move"]
+        #     # print(f"{event = }")
+        #     # print(f"{event['message'] = }")
+        #
+        #     # Send message to WebSocket
+        self.send(text_data=json.dumps(event))
+        # self.send(text_data=json.dumps({'status': "game started"}))
+
 
 class GameConsumer(WebsocketConsumer):
     def connect(self):
-        print()
+        global free_group
+
         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
-        sc_all = self.scope
-        print(f"{sc_all = }")
-        # self.room_group_name = "chat_%s" % self.room_name
-        group = list_of_groups[-1]
-        if group['players'] == 2:
-            list_of_groups.append({'name': f'group{len(list_of_groups)+1}', 'players': 0, 'players_names': []})
 
-        group = list_of_groups[-1]
-        self.room_group_name = group['name']
-        list_of_groups[-1]["players"] += 1
-        list_of_groups[-1]["players_names"].append(self.room_name)
-        print("connect function called")
-        print(f"{self.room_name = } ===={self.room_group_name = }")
+        # list_of_groups[free_group] = {'number_of_players': 0, 'players_ids': [], 'players_names': []}
+        list_of_groups[free_group]['number_of_players'] += 1
+        list_of_groups[free_group]['players_ids'].append(self.room_name)
 
-        # print("111")
+        self.room_group_name = free_group
 
-        # s = get_group_names()
-        # print(f"{self.channel_layer = }")
-        # print(f"{s = }")
-        # print("111")
-        # Join room group
+        if list_of_groups.get(free_group).get('number_of_players') == 2:
+            new_group = f'group_{len(list_of_groups) + 1}'
+            list_of_groups[new_group] = {'number_of_players': 0, 'players_ids': [],
+                                                                  'players_names': []}
+            free_group = new_group
+
+
+        print(f"game_{self.room_name = }")
+        print(f"game_{self.room_group_name = }")
+
         async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
-
         self.accept()
 
-        if list_of_groups[-1]["players"] == 2:
-            async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name,
-                {"type": "chat_message", "status": "game started", 'players_names': list_of_groups[-1]["players_names"]}
-            )
-
     def disconnect(self, close_code):
-        print("disconnect function called")
+        print("Consumer. Disconnecting from group")
+        # session_lazy_obj = self.scope.get('session')
 
+        # data = self.scope
+        # print(f"{data = }")
+
+        # async_to_sync(self.channel_layer.group_send)(
+        #     self.room_group_name, {"type": "lobby_message", 'players': players}
+        # )
         # Leave room group
-        async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name, self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_discard)(self.room_group_name, self.channel_name)
+        # print(f"{players = }")
 
     # Receive message from WebSocket
     def receive(self, text_data):
-        print('___')
+        print('game____')
         text_data_json = json.loads(text_data)
-        # message = text_data_json["message"]
-        list_fields = text_data_json["list_fields"]
-        move = text_data_json["move"]
-        print(f"{list_fields = }")
+        print(f"game_{text_data_json = }")
+        list_of_groups[self.room_group_name]["players_names"].append(text_data_json.get('game').get('player_name'))
+        if len(list_of_groups[self.room_group_name]["players_ids"]) == 2:
+            print(f"game_game started, 2 players connected")
 
-        # Send message to room group
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name, {"type": "chat_message", 'lol':{'lal':'lyl'}, 'list_fields':list_fields, 'move': move}
-        )
-        print("receive function called")
-        print(f"{text_data_json = }")
+            async_to_sync(self.channel_layer.group_send)(self.room_group_name, {"type": "message_start_game",
+                                                                                'data': list_of_groups[self.room_group_name],
+                                                                                })
+
+        # # Send message to room group
+        # if text_data_json.get('game').get('status') == 'joining new game':
+        #     async_to_sync(self.channel_layer.group_send)(self.room_group_name, {"type": "message1", 'data': text_data_json })
+        # else:
+        #     async_to_sync(self.channel_layer.group_send)(self.room_group_name, {"type": "message1", 'data': text_data_json })
+        # async_to_sync(self.channel_layer.group_send)(
+        #     self.room_group_name, {"type": "chat_message", 'lol':{'lal':'lyl'}, 'list_fields':list_fields, 'move': move}
 
     # Receive message from room group
-    def chat_message(self, event):
-        print("chat_message function called")
-        # message = event["message"]
-        if event.get("status") == "game started":
-            print(f"{event.get('status') = }")
-            print(f"{event.get('players_names') = }")
-            self.send(text_data=json.dumps({'status': "game started", 'qqq': '222', 'players_names': event.get("players_names")}))
-        else:
-            list_fields = event["list_fields"]
-            move = event["move"]
-            # print(f"{event = }")
-            # print(f"{event['message'] = }")
+    def message_start_game(self, event):
+        print("game_message_start_game")
 
-            # Send message to WebSocket
-            self.send(text_data=json.dumps({'list_fields': list_fields, 'qqq': '222', 'move': move}))
+        print(f"game_ {event = }")
 
+        print(f"game_{self.room_group_name = }")
+        message = {
+            'type': "data",
+            'game': {
+                'status': 'Game started',
+                'list_fields': list_fields,
+                'move': list_of_groups[self.room_group_name]["players_ids"][0],
+                # 'id': player_id,
+                'victory_status': None,
+                'winner': None,
+            },
+            'players': [
+                {
+                    'id': list_of_groups[self.room_group_name]["players_ids"][0],
+                    'name': list_of_groups[self.room_group_name]["players_names"][0],
+                    'unit': 'x',
+                    'wins': 0,
+                    'losses': 0,
+                    'draws': 0,
+                },
+                {
+                    'id': list_of_groups[self.room_group_name]["players_ids"][1],
+                    'name': list_of_groups[self.room_group_name]["players_names"][1],
+                    'unit': 'o',
+                    'wins': 0,
+                    'losses': 0,
+                    'draws': 0,
+                },
 
+            ]
+        }
 
+        self.send(text_data=json.dumps(message))
+    #     # message = event["message"]
+    # if event.get("status") == "game started":
+    #     print(f"{event.get('status') = }")
+    #     print(f"{event.get('players_names') = }")
+    #     self.send(text_data=json.dumps({'status': "game started", 'qqq': '222', 'players_names': event.get("players_names")}))
+    # else:
+    #     list_fields = event["list_fields"]
+    #     move = event["move"]
+    #     # print(f"{event = }")
+    #     # print(f"{event['message'] = }")
+    #
+    #     # Send message to WebSocket
+    #     self.send(text_data=json.dumps({'list_fields': list_fields, 'qqq': '222', 'move': move}))
 
-
-class ChatConsumer(WebsocketConsumer):
-    def connect(self):
-        self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
-        self.room_group_name = "chat_%s" % self.room_name
-
-        print()
-        print("connect function called")
-        print(f"{self.room_name = } {self.room_group_name = }")
-        # Join room group
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name, self.channel_name
-        )
-
-        self.accept()
-        print(f"{self.channel_layer = }")
-
-    def disconnect(self, close_code):
-        print("disconnect function called")
-
-        # Leave room group
-        async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name, self.channel_name
-        )
-
-    # Receive message from WebSocket
-    def receive(self, text_data):
-        print('___')
-        text_data_json = json.loads(text_data)
-        # message = text_data_json["message"]
-        list_fields = text_data_json["list_fields"]
-        print(f"{list_fields = }")
-
-        # Send message to room group
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name, {"type": "chat_message", 'lol':{'lal':'lyl'}, 'list_fields':list_fields}
-        )
-        print("receive function called")
-        print(f"{text_data_json = }")
-
-    # Receive message from room group
-    def chat_message(self, event):
-        print("chat_message function called")
-        # message = event["message"]
-        list_fields = event["list_fields"]
-        # print(f"{event = }")
-        # print(f"{event['message'] = }")
-
-        # Send message to WebSocket
-        self.send(text_data=json.dumps({'list_fields': list_fields}))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# class GameConsumer(WebsocketConsumer):
+#     def connect(self):
+#         print()
+#         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
+#         sc_all = self.scope
+#         print(f"{sc_all = }")
+#         # self.room_group_name = "chat_%s" % self.room_name
+#         group = list_of_groups[-1]
+#         if group['players'] == 2:
+#             list_of_groups.append({'name': f'group{len(list_of_groups)+1}', 'players': 0, 'players_names': []})
+#
+#         group = list_of_groups[-1]
+#         self.room_group_name = group['name']
+#         list_of_groups[-1]["players"] += 1
+#         list_of_groups[-1]["players_names"].append(self.room_name)
+#         print("connect function called")
+#         print(f"{self.room_name = } ===={self.room_group_name = }")
+#
+#         # print("111")
+#
+#         # s = get_group_names()
+#         # print(f"{self.channel_layer = }")
+#         # print(f"{s = }")
+#         # print("111")
+#         # Join room group
+#         async_to_sync(self.channel_layer.group_add)(self.room_group_name, self.channel_name)
+#
+#         self.accept()
+#
+#         if list_of_groups[-1]["players"] == 2:
+#             async_to_sync(self.channel_layer.group_send)(
+#                 self.room_group_name,
+#                 {"type": "chat_message", "status": "game started", 'players_names': list_of_groups[-1]["players_names"]}
+#             )
+#
+#     def disconnect(self, close_code):
+#         print("disconnect function called")
+#
+#         # Leave room group
+#         async_to_sync(self.channel_layer.group_discard)(
+#             self.room_group_name, self.channel_name
+#         )
+#
+#     # Receive message from WebSocket
+#     def receive(self, text_data):
+#         print('___')
+#         text_data_json = json.loads(text_data)
+#         # message = text_data_json["message"]
+#         list_fields = text_data_json["list_fields"]
+#         move = text_data_json["move"]
+#         print(f"{list_fields = }")
+#
+#         # Send message to room group
+#         async_to_sync(self.channel_layer.group_send)(
+#             self.room_group_name, {"type": "chat_message", 'lol':{'lal':'lyl'}, 'list_fields':list_fields, 'move': move}
+#         )
+#         print("receive function called")
+#         print(f"{text_data_json = }")
+#
+#     # Receive message from room group
+#     def chat_message(self, event):
+#         print("chat_message function called")
+#         # message = event["message"]
+#         if event.get("status") == "game started":
+#             print(f"{event.get('status') = }")
+#             print(f"{event.get('players_names') = }")
+#             self.send(text_data=json.dumps({'status': "game started", 'qqq': '222', 'players_names': event.get("players_names")}))
+#         else:
+#             list_fields = event["list_fields"]
+#             move = event["move"]
+#             # print(f"{event = }")
+#             # print(f"{event['message'] = }")
+#
+#             # Send message to WebSocket
+#             self.send(text_data=json.dumps({'list_fields': list_fields, 'qqq': '222', 'move': move}))
+#
+#
+#
+#
+#
+# class ChatConsumer(WebsocketConsumer):
+#     def connect(self):
+#         self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
+#         self.room_group_name = "chat_%s" % self.room_name
+#
+#         print()
+#         print("connect function called")
+#         print(f"{self.room_name = } {self.room_group_name = }")
+#         # Join room group
+#         async_to_sync(self.channel_layer.group_add)(
+#             self.room_group_name, self.channel_name
+#         )
+#
+#         self.accept()
+#         print(f"{self.channel_layer = }")
+#
+#     def disconnect(self, close_code):
+#         print("disconnect function called")
+#
+#         # Leave room group
+#         async_to_sync(self.channel_layer.group_discard)(
+#             self.room_group_name, self.channel_name
+#         )
+#
+#     # Receive message from WebSocket
+#     def receive(self, text_data):
+#         print('___')
+#         text_data_json = json.loads(text_data)
+#         # message = text_data_json["message"]
+#         list_fields = text_data_json["list_fields"]
+#         print(f"{list_fields = }")
+#
+#         # Send message to room group
+#         async_to_sync(self.channel_layer.group_send)(
+#             self.room_group_name, {"type": "chat_message", 'lol':{'lal':'lyl'}, 'list_fields':list_fields}
+#         )
+#         print("receive function called")
+#         print(f"{text_data_json = }")
+#
+#     # Receive message from room group
+#     def chat_message(self, event):
+#         print("chat_message function called")
+#         # message = event["message"]
+#         list_fields = event["list_fields"]
+#         # print(f"{event = }")
+#         # print(f"{event['message'] = }")
+#
+#         # Send message to WebSocket
+#         self.send(text_data=json.dumps({'list_fields': list_fields}))
 
 
 # import json
@@ -190,19 +355,6 @@ class ChatConsumer(WebsocketConsumer):
 #
 #
 #
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # import json

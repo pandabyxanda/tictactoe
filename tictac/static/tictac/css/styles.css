@@ -178,10 +178,10 @@ main {
 	height:100%;
 }
 
-.grid-form {
+.grid-inner {
   min-width: 180px;
   min-height: 180px;
-  padding: 10px;
+  margin: 10px;
   //padding-top: 10px;
   //padding-bottom: 10px;
 
@@ -191,7 +191,8 @@ main {
   width: calc(min(100vh, 100vw - var(--side_bar_width)*2) - 20px);
   height: calc(min(100vh, 100vw - var(--side_bar_width)*2) - 20px);
 
-  background-color: lightblue;
+  //background-color: lightblue;
+  background: radial-gradient(#fe8d8d, #eeeeee, #eeeeee);
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   grid-gap: 0px;
@@ -208,6 +209,7 @@ main {
     line-height: 0px;
     border-radius: 0px;
     border: 1px solid #41affeb3;
+    background-color: #eeeeee78;
 }
 
 .button_field_allowed:hover{
@@ -215,7 +217,9 @@ main {
 }
 
 .button_field_not_allowed:hover{
-    background-color: #f9d4d4;
+    background-color: #fdcdcd;
+    //border: 5px solid #fe8d8d;
+    //background: radial-gradient(#fe8d8d, #eeeeee, #eeeeee);
 }
 
 
@@ -241,12 +245,12 @@ main {
     overflow-x: hidden;
 
 
-    font-size: 20px;
+    font-size: 18px;
 
 }
 .right_sidebar_inner{
 
-	margin: 10px;
+	margin: 0px;
     overflow-x: hidden;
 }
 
@@ -261,6 +265,7 @@ main {
 .right_sidebar_inner ul li{
 	height: 50px;
     overflow-x: hidden;
+    overflow: hidden;
 	text-align: center;
 }
 
@@ -281,7 +286,7 @@ main {
     resize: none;
 }
 
-#automatch {
+#button_join_lobby, #button_automatch {
     width: 100%;
 
 

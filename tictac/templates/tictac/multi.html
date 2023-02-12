@@ -8,10 +8,9 @@
 
     <div class="grid-out">
         <div class="grid-outer">
-            <div class="grid-form">
-                <!--                {% csrf_token %}-->
+            <div class="grid-inner">
                 {% for f in list_fields %}
-                <button class="button_field_allowed" id={{f.index}} onclick="Ffunc({{f.index}})">
+                <button class="button_field_not_allowed" id="field_{{f.index}}" onclick="Ffunc({{f.index}})">
                     {{f.value}}
                     <!--                {{f.index}}-->
                 </button>
@@ -24,8 +23,9 @@
 
     <script>
         let list_fields = {{ list_fields|safe }};
-        let unit = "o";
         let player_name = "{{ player.name }}";
+        let session_key = "{{ session_key }}";
+
     </script>
     <script src="{% static 'tictac/js/multiplayer.js' %}">
     </script>
@@ -46,20 +46,34 @@
                 </form>
             </li>
             <li id="info_li_2">
-                <button id="automatch" onclick="automatch_clicked()">
-                    Automatch
+                <button id="button_join_lobby" onclick="join_lobby_clicked()">
+                    Join lobby
                 </button>
             </li>
-            <li id="info_li_3">???</li>
-            <li id="info_li_4">vs</li>
-            <li id="info_li_5">???</li>
-            <li id="info_li_6">
-                <div id="game_status_text">
-                    Game status: not ready, press 'automatch'
-                </div>
+            <li id="info_li_3">
+<!--                <button id="button_automatch" onclick="button_automatch_clicked()">-->
+<!--                    Automatch-->
+<!--                </button>-->
             </li>
-            <li id="info_li_7"></li>
-            <li id="info_li_8"></li>
+            <li id="info_li_4">...</li>
+            <li id="info_li_5">...</li>  <!-- vs-->
+            <li id="info_li_6">...</li>
+            <li id="info_li_7">
+<!--                <div id="game_status_text">-->
+<!--                    Game status: not ready, press 'automatch'-->
+<!--                </div>-->
+            </li>
+            <li id="info_li_8">...</li>
+            <li id="info_li_9">...</li>
+            <li id="info_li_10">...</li>
+            <li id="info_li_11">...</li>
+            <li id="info_li_12">...</li>
+            <li id="info_li_13">...</li>
+            <li id="info_li_14">...</li>
+            <li id="info_li_15">...</li>
+            <li id="info_li_16">...</li>
+            <li id="info_li_17">...</li>
+            <li id="info_li_18">...</li>
         </ul>
 
 
