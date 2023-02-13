@@ -13,15 +13,15 @@ list_fields = [{'index': x, 'value': ' '} for x in range(number_of_cells)]
 # list_fields[5]['value'] = 'x'
 # list_fields[23]['value'] = 'x'
 # list_fields[24]['value'] = 'x'
-fields = [[x['value'] for x in list_fields[y:y+length_of_side]] for y in range(0, number_of_cells) if y % 5 == 0]
+fields = [[x['value'] for x in list_fields[y:y+length_of_side]] for y in range(0, number_of_cells) if y % length_of_side == 0]
 
 player = {'name': None, 'unit': None}
 default_names = ('Rocky', 'Anna_Botik', 'April_Showers', 'Dizzy', 'Leya', 'Bob_Link', 'Lucky_Fisher', 'Sam_Sung',
                  'Saad_Maan', 'Chris_P_Bacon', 'Batman_Bin', 'Lord_Brain', 'Keihanaiku', 'MacDonald_Berger', 'Beaver',
                  'Ann_Butts', 'Mia_Khalifa', 'Mr_Gopnik', 'oilala')
 
-for i in fields:
-    print(i)
+# for i in fields:
+#     print(i)
 
 menu = [{'title': 'Singleplayer', 'url_name': 'single'},
         {'title': 'Multiplayer', 'url_name': 'multi'},
