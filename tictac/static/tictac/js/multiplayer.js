@@ -191,42 +191,59 @@ function automatch_clicked() {
                 document.getElementById("info_li_4").innerHTML = data.players[0].name + ' (' + data.players[0].unit + ')'
                 document.getElementById("info_li_5").innerHTML = 'vs'
                 document.getElementById("info_li_6").innerHTML = data.players[1].name + ' (' + data.players[1].unit + ')'
-            };
+
+                if (data.players[0].id == player_id) {
+                    unit = data.players[0].unit;
+                };
 
 
 
-            if (data.players[0].id == player_id) {
-                unit = data.players[0].unit;
-            };
+                if (data.players[1].id == player_id) {
+                    unit = data.players[1].unit;
+                };
 
 
 
-            if (data.players[1].id == player_id) {
-                unit = data.players[1].unit;
-            };
-
-
-
-            if (data.game.move == player_id) {
-            document.getElementById("info_li_7").innerHTML = 'Your turn'
-            turn = 'Your turn';
-            }
-            else {
-            document.getElementById("info_li_7").innerHTML = "Opponent's turn"
-            turn = "Opponent's turn";
-            };
-
-            for (i in data.game.list_fields) {
-                //console.log(typeof i);
-                //console.log(i);
-                //document.getElementById("field_"+i).innerHTML = '8888';
-                if (data.game.list_fields[Number(i)]['value'] == " " && data.game.move == player_id) {
-
-                    document.getElementById("field_"+i).className ='button_field_allowed';
+                if (data.game.move == player_id) {
+                document.getElementById("info_li_7").innerHTML = 'Your turn'
+                turn = 'Your turn';
                 }
                 else {
-                    document.getElementById("field_"+i).className ='button_field_not_allowed';
+                document.getElementById("info_li_7").innerHTML = "Opponent's turn"
+                turn = "Opponent's turn";
                 };
+
+                //console.log('data (chatSocket.onmessage) = ', data);
+                list_fields = data.game.list_fields;
+                for (i in data.game.list_fields) {
+                    //console.log(typeof i);
+                    //console.log(i);
+                    document.getElementById("field_"+i).innerHTML = data.game.list_fields[Number(i)]['value'];
+                    if (data.game.list_fields[Number(i)]['value'] == " " && data.game.move == player_id) {
+
+                        document.getElementById("field_"+i).className ='button_field_allowed';
+                    }
+                    else {
+                        document.getElementById("field_"+i).className ='button_field_not_allowed';
+                    };
+                };
+
+
+
+            };
+
+            if (data.game.status == 'Game finished') {
+                game_started = false;
+
+                if (data.game.winner == player_id) {
+                document.getElementById("info_li_7").innerHTML = 'You won'
+//                turn = 'Your turn';
+                }
+                else {
+                document.getElementById("info_li_7").innerHTML = "You lost"
+//                turn = "Opponent's turn";
+                };
+
             };
 
         };
@@ -243,17 +260,17 @@ function Ffunc(x) {
         if (list_fields[x]['value'] == " " && turn == 'Your turn') {
             document.getElementById("field_"+x).innerHTML = unit;
             document.getElementById("field_"+x).className ='button_field_not_allowed';
-            list_fields[x]['value'] = 'unit';
-//            var message = {
-//                type: "data",
-//                'game': {
-//                    'status': 'joining new game',
-//                    'id': player_id,
-//                    'player_name': player_name,
-//                },
-//
-//
-//            gameSocket.send(JSON.stringify(message));
+            list_fields[x]['value'] = unit;
+
+
+            message = {
+                type: "data",
+                'game': {'status': 'Game started',
+                        'list_fields': list_fields,
+                        'move': player_id
+                        },
+            };
+            gameSocket.send(JSON.stringify(message));
         };
 
     };
