@@ -27,7 +27,7 @@ function join_lobby_clicked() {
         //socket_activated = 1;
 
         chatSocket.onopen = function(event) {
-            //console.log('lobby_socket onopen func called');
+            console.log('lobby_socket onopen func called');
             var message = {
                 type: "data",
                 'player_name': player_name,

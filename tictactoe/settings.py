@@ -27,10 +27,18 @@ else:
     from secret_key import TTT_DJANGO_SECRET_KEY as SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = int(os.environ.get('DEBUG', default=1))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get(
+    "DJANGO_ALLOWED_HOSTS",
+    default='localhost 127.0.0.1'
+).split(" ")
 
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SECURE_HSTS_SECONDS = 3600
+# SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
 
 # Application definition
 
@@ -76,25 +84,47 @@ TEMPLATES = [
 WSGI_APPLICATION = 'tictactoe.wsgi.application'
 
 ASGI_APPLICATION = 'tictactoe.asgi.application'
+
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
+    'default': {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
     },
 }
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": [("127.0.0.1", 6379)],
+#         },
+#     },
+# }
 
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.environ.get("DBNAME", default=None):
+
+    # db postgres for deploy
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql_psycopg2",
+            "NAME": str(os.environ["DBNAME"]),
+            "USER": str(os.environ["DBUSER"]),
+            "PASSWORD": str(os.environ["DBPASS"]),
+            "HOST": str(os.environ.get("DBHOST", "localhost")),
+            "PORT": str(os.environ.get("DBPORT", "5432")),
+        }
     }
-}
+else:
+    # db for local
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
