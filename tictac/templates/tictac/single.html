@@ -14,17 +14,77 @@
 
     <div class="grid-out">
         <div class="grid-outer">
-            <div class="grid-inner">
+            <form class="grid-inner" method="post">
+                {% csrf_token %}
                 {% for f in list_fields %}
-                <button class="button_field_not_allowed2s" id="field_{{f.index}}" onclick="Ffunc({{f.index}})">
-                    {{f.value}}
-                    <!--                {{f.index}}-->
-                </button>
+                {% if f.value == 'x' %}
+                    <button class="button_field_my" id="field_{{f.index}}" type="submit" name='pos' value={{f.index}}>
+                        {{f.value}}
+                        <!--                {{f.index}}-->
+                    </button>
+                {% elif f.value == 'o' %}
+                    <button class="button_field_enemy" id="field_{{f.index}}" type="submit" name='pos' value={{f.index}}>
+                        {{f.value}}
+                        <!--                {{f.index}}-->
+                    </button>
+                {% else %}
+                    <button class="button_field" id="field_{{f.index}}" type="submit" name='pos' value={{f.index}}>
+<!--                        {{f.value}}-->
+                        <!--                {{f.index}}-->
+                    </button>
+                {% endif %}
                 {% endfor %}
-            </div>
+            </form>
         </div>
     </div>
 
 
 </main>
 {% endblock content %}
+
+
+
+{% block right_sidebar %}
+<ul class="right_sidebar_single">
+<!--            <li id="info_li_-1">11111</li>-->
+<!--            <li id="info_li_0">2222222222222222222222</li>-->
+    <li id="info_li_1">
+<!--        <div class="">-->
+            AI vs You
+<!--        </div>-->
+<!--        <form id="player_name_form" action="" method="post">-->
+<!--            {% csrf_token %}-->
+<!--                {{ form }}-->
+<!--                <div class="form-error">-->
+<!--                    {{f.errors}}-->
+<!--                </div>-->
+<!--        </form>-->
+    </li>
+    <li id="info_li_2">
+<!--        <div class="">-->
+            0 : 0
+<!--        </div>-->
+    </li>
+    <li id="info_li_3">
+<!--        <div class="">-->
+            Your turn
+<!--        </div>-->
+    </li>
+    <li id="info_li_4">
+        <button id="button_single_again" >
+            <div class="">
+                Go again
+            </div>
+        </button>
+    </li>
+<!--    <li id="info_li_5">...</li> -->
+<!--    <li id="info_li_6">...</li>-->
+</ul>
+
+
+
+<!--        hello-->
+<!--        Username: {{player.name}}-->
+<!--        Unit to use: {{player.unit}}-->
+{% endblock right_sidebar %}
+

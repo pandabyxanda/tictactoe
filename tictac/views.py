@@ -5,15 +5,18 @@ from django.shortcuts import render
 
 from .forms import *
 from .models import *
+from .algos import *
 
-length_of_side = 10
+length_of_side = 15
 number_of_cells = length_of_side ** 2
-list_fields = [{'index': x, 'value': ' '} for x in range(number_of_cells)]
+list_fields = [{'index': x, 'value': '.'} for x in range(number_of_cells)]
 # list_fields[4]['value'] = 'A'
 # list_fields[5]['value'] = 'x'
 # list_fields[23]['value'] = 'x'
 # list_fields[24]['value'] = 'x'
 fields = [[x['value'] for x in list_fields[y:y+length_of_side]] for y in range(0, number_of_cells) if y % length_of_side == 0]
+
+
 
 player = {'name': None, 'unit': None}
 default_names = ('Rocky', 'Anna_Botik', 'April_Showers', 'Dizzy', 'Leya', 'Bob_Link', 'Lucky_Fisher', 'Sam_Sung',
@@ -92,7 +95,68 @@ def index(request, *args, **kwargs):
 #     return render(request, "tictac/index.html")
 
 def singleplayer(request, *args, **kwargs):
+    global list_fields
+
+    list_weights = [100 for x in range(number_of_cells)]
+    weights = [[x for x in list_weights[y:y + length_of_side]] for y in range(0, number_of_cells) if
+               y % length_of_side == 0]
     print()
+    if request.method == 'GET' or request.POST.get('pos') == None:
+        list_fields = [{'index': x, 'value': '.'} for x in range(number_of_cells)]
+        print(f"{request.GET = }")
+        fields = [[x['value'] for x in list_fields[y:y + length_of_side]] for y in range(0, number_of_cells) if
+                  y % length_of_side == 0]
+
+        # res = find_move(fields)
+        res = find_weight(fields, 'o', 5, weights)
+
+        fields[res[0]][res[1]] = 'o'
+
+        list_fields = []
+        jj = 0
+        for row in fields:
+            for x in row:
+                list_fields.append({'index': jj, 'value': x})
+                jj += 1
+
+        for row in range(0, len(fields)):
+            for column in range(0, len(fields[row])):
+                print(fields[row][column] if fields[row][column] != ' ' else '.', end=' ')
+            print()
+
+
+    if request.method == 'POST':
+        if request.POST.get('pos'):
+            print(f"{request.POST = }")
+            pos = int(request.POST.get('pos'))
+            if list_fields[pos]['value'] == '.':
+                list_fields[pos]['value'] = 'x'
+
+                fields = [[x['value'] for x in list_fields[y:y + length_of_side]] for y in range(0, number_of_cells) if
+                          y % length_of_side == 0]
+
+
+                # res = find_move(fields)
+                res = find_weight(fields, 'o', 5, weights)
+
+
+                fields[res[0]][res[1]] = 'o'
+
+                list_fields = []
+                jj = 0
+                for row in fields:
+                    for x in row:
+                        list_fields.append({'index': jj, 'value': x})
+                        jj += 1
+
+
+                for row in range(0, len(fields)):
+                    for column in range(0, len(fields[row])):
+                        print(fields[row][column] if fields[row][column] != ' ' else '.', end=' ')
+                    print()
+
+
+
     context = {
         'menu': menu,
         'list_fields': list_fields,

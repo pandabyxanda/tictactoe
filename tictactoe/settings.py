@@ -85,11 +85,11 @@ WSGI_APPLICATION = 'tictactoe.wsgi.application'
 
 ASGI_APPLICATION = 'tictactoe.asgi.application'
 
-CHANNEL_LAYERS = {
-    'default': {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    },
-}
+# CHANNEL_LAYERS = {
+#     'default': {
+#         "BACKEND": "channels.layers.InMemoryChannelLayer"
+#     },
+# }
 
 # CHANNEL_LAYERS = {
 #     "default": {
