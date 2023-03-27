@@ -106,9 +106,10 @@ def singleplayer(request, *args, **kwargs):
                y % length_of_side == 0]
     print()
 
-    res = Testing.objects.create(
+    Testing.objects.create(
         name=str(uuid.uuid4()),
-    ).all()
+    )
+    res = Testing.objects.all()
     print(res)
     print(f"Number of raws in BD: {len(res)}")
 

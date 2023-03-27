@@ -1,10 +1,38 @@
 version: '3.8'
 services:
-   web:
-       build: .
-       command: python manage.py runserver 0.0.0.0:8000
-       ports:
-           - 8000:8000
+  dj_gunicorn_1:
+    volumes:
+      - static:/static
+    env_file:
+      - .env
+    build:
+      context: .
+    ports:
+      - 8000:8000
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - static:/static
+    ports:
+      - 80:80
+    depends_on:
+      - dj_gunicorn_1
+
+volumes:
+  static:
+
+
+
+
+
+#version: '3.8'
+#services:
+#   web:
+#       build: .
+#       command: python manage.py runserver 0.0.0.0:8000
+#       ports:
+#           - 8000:8000
 
 
 #version: '3.8'

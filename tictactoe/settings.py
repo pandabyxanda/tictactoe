@@ -20,20 +20,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-KEY = os.environ.get("TTT_DJANGO_SECRET_KEY", default=None)
+KEY = os.environ.get("SECRET_KEY", default=None)
 if KEY:
     SECRET_KEY = str(KEY)
 else:
     from secret_key import TTT_DJANGO_SECRET_KEY as SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = int(os.environ.get('DEBUG', default=1))
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', default=1)
+# DEBUG = True
 
-ALLOWED_HOSTS = os.environ.get(
-    "DJANGO_ALLOWED_HOSTS",
-    default='localhost 127.0.0.1'
-).split(" ")
+# change for production
+ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = os.environ.get(
+#     "DJANGO_ALLOWED_HOSTS",
+#     default='localhost 127.0.0.1'
+# ).split(" ")
 
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURE_HSTS_SECONDS = 3600
@@ -182,12 +184,19 @@ if os.environ.get("WWW_DIR", default=None):
     MEDIA_ROOT = str(os.environ["WWW_DIR"]) + '/media'
 else:
     STATIC_URL = '/static/'
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    STATIC_ROOT = '/static/'
     MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    MEDIA_ROOT = '/media/'
+    # STATIC_URL = '/static/'
+    # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    # MEDIA_URL = '/media/'
+    # MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
+
+# when problems with csrf appear
+CSRF_TRUSTED_ORIGINS = ['http://localhost']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
