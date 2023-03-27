@@ -1,7 +1,8 @@
 import json
 import random
+import uuid
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from .forms import *
 from .models import *
@@ -36,60 +37,62 @@ menu = [{'title': 'Singleplayer', 'url_name': 'single'},
 
 def index(request, *args, **kwargs):
 
-    print()
+    return redirect('single')
 
-    player = {'name': None, 'unit': None}
-    # a = str(random.randrange(10, 99, 1))
-    # u = random.choice(unit)
+    # print()
     #
-    # print(f"{a = }")
-    # print(f"{u = }")
-    player['name'] = str(random.randrange(10, 99, 1))
-    player['unit'] = 'o'
-
-    print(f"{request.session = }")
-    if request.session.session_key:
-        print(f"{request.session.session_key = }")
-
-    data = request.session.get('data', default=None)
-    if data:
-        print(f"{data = }")
-
-
-
-    # if request.method == 'POST':
-    #     print(f"{request.POST = }")
-    #     fields_index = request.POST.get('field_index', None)
-    #     # print(f"{fields_index = }")
-    #     if fields_index:
-    #         list_fields[int(fields_index)]['value'] = 'x'
-    #         print(f"{int(fields_index) = }")
-    #         print(f"{list_fields[int(fields_index[0])]['value'] = }")
-    #         fields = [[x['value'] for x in list_fields[y:y + length_of_side]] for y in range(0, number_of_cells) if
-    #                   y % 5 == 0]
-    #         for i in fields:
-    #             print(i)
-    #         data = fields
-    #         request.session['data'] = data
-
-
-    # fields = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    # fields_x = [5, 6]
-    # fields_o = [1, 2]
-    context = {
-        'menu': menu,
-        # 'title': menu[2]['title'],
-        # 'choose_collection_form': choose_collection_form,
-        # 'choose_collection': choose_collection,
-        # 'words_records': words_records,
-        'list_fields': list_fields,
-        # 'fields_x': fields_x,
-        # 'fields_o': fields_o,
-        'player': player,
-        'j_list_fields': json.dumps([x for x in range(number_of_cells)]),
-        'str_list_fields': json.dumps([str(x) for x in range(number_of_cells)]),
-    }
-    return render(request, 'tictac/index.html', context=context)
+    # player = {'name': None, 'unit': None}
+    # # a = str(random.randrange(10, 99, 1))
+    # # u = random.choice(unit)
+    # #
+    # # print(f"{a = }")
+    # # print(f"{u = }")
+    # player['name'] = str(random.randrange(10, 99, 1))
+    # player['unit'] = 'o'
+    #
+    # print(f"{request.session = }")
+    # if request.session.session_key:
+    #     print(f"{request.session.session_key = }")
+    #
+    # data = request.session.get('data', default=None)
+    # if data:
+    #     print(f"{data = }")
+    #
+    #
+    #
+    # # if request.method == 'POST':
+    # #     print(f"{request.POST = }")
+    # #     fields_index = request.POST.get('field_index', None)
+    # #     # print(f"{fields_index = }")
+    # #     if fields_index:
+    # #         list_fields[int(fields_index)]['value'] = 'x'
+    # #         print(f"{int(fields_index) = }")
+    # #         print(f"{list_fields[int(fields_index[0])]['value'] = }")
+    # #         fields = [[x['value'] for x in list_fields[y:y + length_of_side]] for y in range(0, number_of_cells) if
+    # #                   y % 5 == 0]
+    # #         for i in fields:
+    # #             print(i)
+    # #         data = fields
+    # #         request.session['data'] = data
+    #
+    #
+    # # fields = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    # # fields_x = [5, 6]
+    # # fields_o = [1, 2]
+    # context = {
+    #     'menu': menu,
+    #     # 'title': menu[2]['title'],
+    #     # 'choose_collection_form': choose_collection_form,
+    #     # 'choose_collection': choose_collection,
+    #     # 'words_records': words_records,
+    #     'list_fields': list_fields,
+    #     # 'fields_x': fields_x,
+    #     # 'fields_o': fields_o,
+    #     'player': player,
+    #     'j_list_fields': json.dumps([x for x in range(number_of_cells)]),
+    #     'str_list_fields': json.dumps([str(x) for x in range(number_of_cells)]),
+    # }
+    # return render(request, 'tictac/index.html', context=context)
 
 # def index(request):
 #     return render(request, "tictac/index.html")
@@ -97,20 +100,32 @@ def index(request, *args, **kwargs):
 def singleplayer(request, *args, **kwargs):
     global list_fields
 
+
     list_weights = [100 for x in range(number_of_cells)]
     weights = [[x for x in list_weights[y:y + length_of_side]] for y in range(0, number_of_cells) if
                y % length_of_side == 0]
     print()
+
+    res = Testing.objects.create(
+        name=str(uuid.uuid4()),
+    ).all()
+    print(res)
+    print(f"Number of raws in BD: {len(res)}")
+
+
+    status = 'game_on'
+    winning_cells = []
+
     if request.method == 'GET' or request.POST.get('pos') == None:
         list_fields = [{'index': x, 'value': '.'} for x in range(number_of_cells)]
         print(f"{request.GET = }")
         fields = [[x['value'] for x in list_fields[y:y + length_of_side]] for y in range(0, number_of_cells) if
                   y % length_of_side == 0]
-
+        status = 'game_on'
         # res = find_move(fields)
         res = find_weight(fields, 'o', 5, weights)
 
-        fields[res[0]][res[1]] = 'o'
+        fields[res['move'][0]][res['move'][1]] = 'o'
 
         list_fields = []
         jj = 0
@@ -138,9 +153,13 @@ def singleplayer(request, *args, **kwargs):
 
                 # res = find_move(fields)
                 res = find_weight(fields, 'o', 5, weights)
-
-
-                fields[res[0]][res[1]] = 'o'
+                # return {'status': 'game_on', 'move': (row, column)}
+                print(f"{res = }")
+                if res['status'] == 'game_on':
+                    fields[res['move'][0]][res['move'][1]] = 'o'
+                else:
+                    status = 'won'
+                    winning_cells = res['cells']
 
                 list_fields = []
                 jj = 0
@@ -156,10 +175,13 @@ def singleplayer(request, *args, **kwargs):
                     print()
 
 
-
+    # status = 'won'
     context = {
         'menu': menu,
         'list_fields': list_fields,
+        'title': menu[0]['title'],
+        'status': status,
+        'winning_cells': winning_cells,
     }
     return render(request, 'tictac/single.html', context=context)
 
@@ -186,6 +208,7 @@ def multiplayer(request, *args, **kwargs):
     player['unit'] = random.choice(unit)
     context = {
         'menu': menu,
+        'title': menu[1]['title'],
         'list_fields': list_fields,
         'form': form,
         'player': player,
@@ -197,6 +220,7 @@ def about(request, *args, **kwargs):
     print()
     context = {
         'menu': menu,
+        'title': menu[2]['title'],
     }
     return render(request, 'tictac/about.html', context=context)
 

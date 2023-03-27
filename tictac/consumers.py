@@ -4,7 +4,7 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 
 from .views import list_fields
-from .algos import check_win
+# from .algos import check_win
 
 list_fields = list_fields
 
@@ -187,7 +187,8 @@ class GameConsumer(WebsocketConsumer):
 
             fields = [[x['value'] for x in list_fields[y:y+int(len(list_fields) ** 0.5)]]
                       for y in range(0, len(list_fields)) if y % int(len(list_fields) ** 0.5) == 0]
-            winner = check_win(fields=fields, units=('x', 'o'), win_line_length=2)
+            # winner = check_win(fields=fields, units=('x', 'o'), win_line_length=2)
+            winner = None
             if winner:
                 print(f'winner is {winner}')
 

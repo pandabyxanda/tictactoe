@@ -17,21 +17,40 @@
             <form class="grid-inner" method="post">
                 {% csrf_token %}
                 {% for f in list_fields %}
-                {% if f.value == 'x' %}
-                    <button class="button_field_my" id="field_{{f.index}}" type="submit" name='pos' value={{f.index}}>
-                        {{f.value}}
-                        <!--                {{f.index}}-->
-                    </button>
-                {% elif f.value == 'o' %}
-                    <button class="button_field_enemy" id="field_{{f.index}}" type="submit" name='pos' value={{f.index}}>
-                        {{f.value}}
-                        <!--                {{f.index}}-->
-                    </button>
+                {% if status == 'won' %}
+                    {% if f.value == 'x' %}
+                        <button class="button_field_blocked_my" id="field_{{f.index}}">
+                            {{f.value}}
+                            <!--                {{f.index}}-->
+                        </button>
+                    {% elif f.value == 'o' %}
+                        <button class="button_field_blocked_enemy" id="field_{{f.index}}">
+                            {{f.value}}
+                            <!--                {{f.index}}-->
+                        </button>
+                    {% else %}
+                        <button class="button_field_blocked" id="field_{{f.index}}">
+    <!--                        {{f.value}}-->
+                            <!--                {{f.index}}-->
+                        </button>
+                    {% endif %}
                 {% else %}
-                    <button class="button_field" id="field_{{f.index}}" type="submit" name='pos' value={{f.index}}>
-<!--                        {{f.value}}-->
-                        <!--                {{f.index}}-->
-                    </button>
+                    {% if f.value == 'x' %}
+                        <button class="button_field_my" id="field_{{f.index}}" type="submit" name='pos' value={{f.index}}>
+                            {{f.value}}
+                            <!--                {{f.index}}-->
+                        </button>
+                    {% elif f.value == 'o' %}
+                        <button class="button_field_enemy" id="field_{{f.index}}" type="submit" name='pos' value={{f.index}}>
+                            {{f.value}}
+                            <!--                {{f.index}}-->
+                        </button>
+                    {% else %}
+                        <button class="button_field" id="field_{{f.index}}" type="submit" name='pos' value={{f.index}}>
+    <!--                        {{f.value}}-->
+                            <!--                {{f.index}}-->
+                        </button>
+                    {% endif %}
                 {% endif %}
                 {% endfor %}
             </form>

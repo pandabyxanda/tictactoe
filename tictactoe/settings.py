@@ -27,7 +27,8 @@ else:
     from secret_key import TTT_DJANGO_SECRET_KEY as SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(os.environ.get('DEBUG', default=1))
+# DEBUG = int(os.environ.get('DEBUG', default=1))
+DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get(
     "DJANGO_ALLOWED_HOSTS",
@@ -43,7 +44,8 @@ CSRF_COOKIE_SECURE = False
 # Application definition
 
 INSTALLED_APPS = [
-    "daphne",
+    # "daphne",
+    # "gunicorn",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -125,6 +127,18 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'db_django',
+#         'USER': 'root',
+#         'PASSWORD': 'password',
+#         'HOST': 'db',
+#         'PORT': '3306',
+#     }
+# }
+
 
 
 # Password validation

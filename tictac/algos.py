@@ -2,205 +2,205 @@ import math
 import random
 
 
-def check_win(fields, units, win_line_length):
-    win_line_tail_length = win_line_length // 2
-    length_of_side = len(fields[0])
-    for row in range(0, len(fields)):
-        for column in range(0, len(fields[row])):
-            for unit in units:
-                if fields[row][column] == unit:
-
-                    line = 0
-                    if row >= win_line_tail_length and row <= length_of_side - win_line_tail_length - 1:
-                        for i in range(row - win_line_tail_length, row + win_line_tail_length + 1):
-                            # print(f"field[{i}][{column}] {row}")
-                            if fields[i][column] != unit:
-                                break
-                            line += 1
-
-                    if line == win_line_length:
-                        # print(f"{unit} won, field[{row}][{column}]")
-                        return unit
-
-                    if column >= win_line_tail_length and column <= length_of_side - win_line_tail_length - 1:
-                        if line < win_line_length:
-                            line = 0
-                            for i in range(column - win_line_tail_length, column + win_line_tail_length + 1):
-                                if fields[row][i] != unit:
-                                    break
-                                line += 1
-
-                    if line == win_line_length:
-                        # print(f"{unit} won, field[{row}][{column}]")
-                        return unit
-
-                    if row >= win_line_tail_length and row <= length_of_side - win_line_tail_length - 1 and \
-                            column >= win_line_tail_length and column <= length_of_side - win_line_tail_length - 1:
-                        line = 0
-                        # print(f"field[{row}][{column}]")
-                        for i in range(-win_line_tail_length, win_line_tail_length + 1):
-                            # print(f"field[{i}][{column}] {row}")
-                            if fields[row + i][column + i] != unit:
-                                break
-                            line += 1
-
-                        if line < win_line_length:
-                            line = 0
-                            for i in range(-win_line_tail_length, win_line_tail_length + 1):
-                                # print(f"field[{i}][{column}] {row}")
-                                if fields[row + i][column - i] != unit:
-                                    break
-                                line += 1
-
-                    if line == win_line_length:
-                        # print(f"{unit} won, field[{row}][{column}]")
-                        return unit
-
-
-def find_line(fields, unit, win_line_length):
-    empty = '.'
-    win_line_tail_length = win_line_length // 2
-    length_of_side = len(fields[0])
-    for row in range(0, len(fields)):
-        for column in range(0, len(fields[row])):
-            if fields[row][column] == unit:
-
-                # Vertical line
-                line = 0
-                coords = []
-                possible_cells = []
-                if row >= win_line_tail_length and row <= length_of_side - win_line_tail_length - 1:
-                    for i in range(row - win_line_tail_length, row + win_line_tail_length + 1):
-                        # print(f"field[{i}][{column}] {row}")
-                        if fields[i][column] != unit:
-                            continue
-                        line += 1
-                        coords.append((i, column))
-                        if i > 0:
-                            y1 = i - 1
-                            if fields[y1][column] == empty:
-                                possible_cells.append((y1, column))
-
-                        # print(f"{i = } {row + win_line_tail_length = } {i = }")
-                        if i < length_of_side - 1:
-                            y1 = i + 1
-                            if fields[y1][column] == empty:
-                                possible_cells.append((y1, column))
-
-                if line == win_line_length:
-                    # print(f"{unit} won, field[{row}][{column}]")
-                    result = unit, coords, possible_cells
-                    return result
-
-                # Horizontal line
-                if column >= win_line_tail_length and column <= length_of_side - win_line_tail_length - 1:
-                    if line < win_line_length:
-                        line = 0
-                        coords = []
-                        possible_cells = []
-                        for i in range(column - win_line_tail_length, column + win_line_tail_length + 1):
-                            if fields[row][i] != unit:
-                                continue
-                            line += 1
-                            coords.append((row, i))
-
-                            if i > 0:
-                                x1 = i - 1
-                                if fields[row][x1] == empty:
-                                    possible_cells.append((row, x1))
-                            # print(f"{i = } {row + win_line_tail_length = } {i = }")
-                            if i < length_of_side - 1:
-                                x1 = i + 1
-                                if fields[row][x1] == empty:
-                                    possible_cells.append((row, x1))
-
-                if line == win_line_length:
-                    # print(f"{unit} won, field[{row}][{column}]")
-                    result = unit, coords, possible_cells
-                    return result
-
-                if row >= win_line_tail_length and row <= length_of_side - win_line_tail_length - 1 and \
-                        column >= win_line_tail_length and column <= length_of_side - win_line_tail_length - 1:
-                    # print(f"{row = } {column = }")
-                    line = 0
-                    coords = []
-                    possible_cells = []
-                    # print(f"field[{row}][{column}]")
-                    for i in range(-win_line_tail_length, win_line_tail_length + 1):
-                        # print(f"field[{i}][{column}] {row}")
-                        if fields[row + i][column + i] != unit:
-                            # print(f"{row + i = } {column + i = }")
-                            # print('break')
-                            continue
-                        # hh5555555555555
-                        line += 1
-                        coords.append((row + i, column + i))
-
-                        if row + i > 0 and column + i > 0:
-                            x1 = i - 1
-                            if fields[row + x1][column + x1] == empty:
-                                possible_cells.append((row + x1, column + x1))
-                        # print(f"{i = } {row + win_line_tail_length = } {i = }")
-                        if row + i < length_of_side - 1 and column + i < length_of_side - 1:
-                            x1 = i + 1
-                            if fields[row + x1][column + x1] == empty:
-                                possible_cells.append((row + x1, column + x1))
-
-                    if line == win_line_length:
-                        # print(f"{unit} won, field[{row}][{column}]")
-                        result = unit, coords, possible_cells
-                        return result
-
-                    if line < win_line_length:
-                        line = 0
-                        coords = []
-                        possible_cells = []
-                        for i in range(-win_line_tail_length, win_line_tail_length + 1):
-                            # print(f"field[{i}][{column}] {row}")
-                            if fields[row + i][column - i] != unit:
-                                continue
-                            line += 1
-                            coords.append((row + i, column - i))
-
-                            if row + i > 0 and row + i < length_of_side - 1 and column - i > 0 and column - i < length_of_side - 1:
-                                x1 = i - 1
-                                if fields[row + x1][column - x1] == empty:
-                                    possible_cells.append((row + x1, column - x1))
-                            # print(f"{i = } {row + win_line_tail_length = } {i = }")
-                            if row + i > 0 and row + i < length_of_side - 1 and column - i > 0 and column - i < length_of_side - 1:
-                                x1 = i + 1
-                                if fields[row + x1][column - x1] == empty:
-                                    possible_cells.append((row + x1, column - x1))
-
-                        if line == win_line_length:
-                            # print(f"{unit} won, field[{row}][{column}]")
-                            result = unit, coords, possible_cells
-                            return result
+# def check_win(fields, units, win_line_length):
+#     win_line_tail_length = win_line_length // 2
+#     length_of_side = len(fields[0])
+#     for row in range(0, len(fields)):
+#         for column in range(0, len(fields[row])):
+#             for unit in units:
+#                 if fields[row][column] == unit:
+#
+#                     line = 0
+#                     if row >= win_line_tail_length and row <= length_of_side - win_line_tail_length - 1:
+#                         for i in range(row - win_line_tail_length, row + win_line_tail_length + 1):
+#                             # print(f"field[{i}][{column}] {row}")
+#                             if fields[i][column] != unit:
+#                                 break
+#                             line += 1
+#
+#                     if line == win_line_length:
+#                         # print(f"{unit} won, field[{row}][{column}]")
+#                         return unit
+#
+#                     if column >= win_line_tail_length and column <= length_of_side - win_line_tail_length - 1:
+#                         if line < win_line_length:
+#                             line = 0
+#                             for i in range(column - win_line_tail_length, column + win_line_tail_length + 1):
+#                                 if fields[row][i] != unit:
+#                                     break
+#                                 line += 1
+#
+#                     if line == win_line_length:
+#                         # print(f"{unit} won, field[{row}][{column}]")
+#                         return unit
+#
+#                     if row >= win_line_tail_length and row <= length_of_side - win_line_tail_length - 1 and \
+#                             column >= win_line_tail_length and column <= length_of_side - win_line_tail_length - 1:
+#                         line = 0
+#                         # print(f"field[{row}][{column}]")
+#                         for i in range(-win_line_tail_length, win_line_tail_length + 1):
+#                             # print(f"field[{i}][{column}] {row}")
+#                             if fields[row + i][column + i] != unit:
+#                                 break
+#                             line += 1
+#
+#                         if line < win_line_length:
+#                             line = 0
+#                             for i in range(-win_line_tail_length, win_line_tail_length + 1):
+#                                 # print(f"field[{i}][{column}] {row}")
+#                                 if fields[row + i][column - i] != unit:
+#                                     break
+#                                 line += 1
+#
+#                     if line == win_line_length:
+#                         # print(f"{unit} won, field[{row}][{column}]")
+#                         return unit
 
 
-def find_move(fields):
-    empty = '.'
-    for i in range(4, 0, -1):
-        res = find_line(fields, 'x', i)
-        if res and len(res[2]) > 0:
-            print(f"found {res[2]}")
-            res = res[2][0]
-        else:
-            res = None
-        if res:
-            print(f"Found move for line with: {i} X-es")
-            break
-        print(f"nothing found for: {i} X-es ")
-    if not res:
-        print(f"Did not find a move, using random")
-        while True:
-            x = random.randint(0, len(fields) - 1)
-            y = random.randint(0, len(fields) - 1)
-            if fields[y][x] == empty:
-                res = (y, x)
-                break
+# def find_line(fields, unit, win_line_length):
+#     empty = '.'
+#     win_line_tail_length = win_line_length // 2
+#     length_of_side = len(fields[0])
+#     for row in range(0, len(fields)):
+#         for column in range(0, len(fields[row])):
+#             if fields[row][column] == unit:
+#
+#                 # Vertical line
+#                 line = 0
+#                 coords = []
+#                 possible_cells = []
+#                 if row >= win_line_tail_length and row <= length_of_side - win_line_tail_length - 1:
+#                     for i in range(row - win_line_tail_length, row + win_line_tail_length + 1):
+#                         # print(f"field[{i}][{column}] {row}")
+#                         if fields[i][column] != unit:
+#                             continue
+#                         line += 1
+#                         coords.append((i, column))
+#                         if i > 0:
+#                             y1 = i - 1
+#                             if fields[y1][column] == empty:
+#                                 possible_cells.append((y1, column))
+#
+#                         # print(f"{i = } {row + win_line_tail_length = } {i = }")
+#                         if i < length_of_side - 1:
+#                             y1 = i + 1
+#                             if fields[y1][column] == empty:
+#                                 possible_cells.append((y1, column))
+#
+#                 if line == win_line_length:
+#                     # print(f"{unit} won, field[{row}][{column}]")
+#                     result = unit, coords, possible_cells
+#                     return result
+#
+#                 # Horizontal line
+#                 if column >= win_line_tail_length and column <= length_of_side - win_line_tail_length - 1:
+#                     if line < win_line_length:
+#                         line = 0
+#                         coords = []
+#                         possible_cells = []
+#                         for i in range(column - win_line_tail_length, column + win_line_tail_length + 1):
+#                             if fields[row][i] != unit:
+#                                 continue
+#                             line += 1
+#                             coords.append((row, i))
+#
+#                             if i > 0:
+#                                 x1 = i - 1
+#                                 if fields[row][x1] == empty:
+#                                     possible_cells.append((row, x1))
+#                             # print(f"{i = } {row + win_line_tail_length = } {i = }")
+#                             if i < length_of_side - 1:
+#                                 x1 = i + 1
+#                                 if fields[row][x1] == empty:
+#                                     possible_cells.append((row, x1))
+#
+#                 if line == win_line_length:
+#                     # print(f"{unit} won, field[{row}][{column}]")
+#                     result = unit, coords, possible_cells
+#                     return result
+#
+#                 if row >= win_line_tail_length and row <= length_of_side - win_line_tail_length - 1 and \
+#                         column >= win_line_tail_length and column <= length_of_side - win_line_tail_length - 1:
+#                     # print(f"{row = } {column = }")
+#                     line = 0
+#                     coords = []
+#                     possible_cells = []
+#                     # print(f"field[{row}][{column}]")
+#                     for i in range(-win_line_tail_length, win_line_tail_length + 1):
+#                         # print(f"field[{i}][{column}] {row}")
+#                         if fields[row + i][column + i] != unit:
+#                             # print(f"{row + i = } {column + i = }")
+#                             # print('break')
+#                             continue
+#                         # hh5555555555555
+#                         line += 1
+#                         coords.append((row + i, column + i))
+#
+#                         if row + i > 0 and column + i > 0:
+#                             x1 = i - 1
+#                             if fields[row + x1][column + x1] == empty:
+#                                 possible_cells.append((row + x1, column + x1))
+#                         # print(f"{i = } {row + win_line_tail_length = } {i = }")
+#                         if row + i < length_of_side - 1 and column + i < length_of_side - 1:
+#                             x1 = i + 1
+#                             if fields[row + x1][column + x1] == empty:
+#                                 possible_cells.append((row + x1, column + x1))
+#
+#                     if line == win_line_length:
+#                         # print(f"{unit} won, field[{row}][{column}]")
+#                         result = unit, coords, possible_cells
+#                         return result
+#
+#                     if line < win_line_length:
+#                         line = 0
+#                         coords = []
+#                         possible_cells = []
+#                         for i in range(-win_line_tail_length, win_line_tail_length + 1):
+#                             # print(f"field[{i}][{column}] {row}")
+#                             if fields[row + i][column - i] != unit:
+#                                 continue
+#                             line += 1
+#                             coords.append((row + i, column - i))
+#
+#                             if row + i > 0 and row + i < length_of_side - 1 and column - i > 0 and column - i < length_of_side - 1:
+#                                 x1 = i - 1
+#                                 if fields[row + x1][column - x1] == empty:
+#                                     possible_cells.append((row + x1, column - x1))
+#                             # print(f"{i = } {row + win_line_tail_length = } {i = }")
+#                             if row + i > 0 and row + i < length_of_side - 1 and column - i > 0 and column - i < length_of_side - 1:
+#                                 x1 = i + 1
+#                                 if fields[row + x1][column - x1] == empty:
+#                                     possible_cells.append((row + x1, column - x1))
+#
+#                         if line == win_line_length:
+#                             # print(f"{unit} won, field[{row}][{column}]")
+#                             result = unit, coords, possible_cells
+#                             return result
 
-    return res
+
+# def find_move(fields):
+#     empty = '.'
+#     for i in range(4, 0, -1):
+#         res = find_line(fields, 'x', i)
+#         if res and len(res[2]) > 0:
+#             print(f"found {res[2]}")
+#             res = res[2][0]
+#         else:
+#             res = None
+#         if res:
+#             print(f"Found move for line with: {i} X-es")
+#             break
+#         print(f"nothing found for: {i} X-es ")
+#     if not res:
+#         print(f"Did not find a move, using random")
+#         while True:
+#             x = random.randint(0, len(fields) - 1)
+#             y = random.randint(0, len(fields) - 1)
+#             if fields[y][x] == empty:
+#                 res = (y, x)
+#                 break
+#
+#     return res
 
 
 def print_field(fields):
@@ -213,19 +213,19 @@ def print_field(fields):
         print()
 
 
-def computer_move(fields):
-    pass
-    ...
+# def computer_move(fields):
+#     pass
+#     ...
 
 
 def find_weight(fields, my_unit, win_line_length, weights):
-    def calc_weight(variants, weights, number_of_my_units, unit_1):
+    def calc_weight(variants, weights, number_of_my_units, unit_1, checked_cells):
         if len(variants) > 0:
             # print(f"is {j}st")
-            print(f"{variants = }")
+            # print(f"{variants = }")
             print(f"{number_of_my_units = }")
             for i in variants:
-                weights[i[0]][i[1]] += number_of_my_units ** 3
+                weights[i[0]][i[1]] += number_of_my_units ** 2
                 if unit_1 == my_unit:
                     weights[i[0]][i[1]] += 1
 
@@ -239,6 +239,7 @@ def find_weight(fields, my_unit, win_line_length, weights):
                     for j in range(win_line_length):
                         number_of_my_units = 0
                         variants = []
+                        checked_cells = []
                         for i in range(-j, -j + win_line_length):
                             if column + i >= length_of_side:
                                 variants = []
@@ -248,17 +249,21 @@ def find_weight(fields, my_unit, win_line_length, weights):
                                 break
                             if fields[row][column + i] == unit_1:
                                 number_of_my_units += 1
+                                checked_cells.append((row, column + i))
                             if fields[row][column + i] == unit_2:
                                 variants = []
                                 break
                             if fields[row][column + i] == empty:
                                 variants.append((row, column + i))
-                        calc_weight(variants, weights, number_of_my_units, unit_1)
+                        calc_weight(variants, weights, number_of_my_units, unit_1, checked_cells)
+                        if number_of_my_units == win_line_length:
+                            return {'status': 'won', 'cells': checked_cells}
 
                     # column
                     for j in range(win_line_length):
                         number_of_my_units = 0
                         variants = []
+                        checked_cells = []
                         for i in range(-j, -j + win_line_length):
                             if row + i >= length_of_side:
                                 variants = []
@@ -268,17 +273,21 @@ def find_weight(fields, my_unit, win_line_length, weights):
                                 break
                             if fields[row + i][column] == unit_1:
                                 number_of_my_units += 1
+                                checked_cells.append((row + i, column))
                             if fields[row + i][column] == unit_2:
                                 variants = []
                                 break
                             if fields[row + i][column] == empty:
                                 variants.append((row + i, column))
-                        calc_weight(variants, weights, number_of_my_units, unit_1)
+                        calc_weight(variants, weights, number_of_my_units, unit_1, checked_cells)
+                        if number_of_my_units == win_line_length:
+                            return {'status': 'won', 'cells': checked_cells}
 
                     # diagonal right bottom
                     for j in range(win_line_length):
                         number_of_my_units = 0
                         variants = []
+                        checked_cells = []
                         for i in range(-j, -j + win_line_length):
                             if row + i >= length_of_side:
                                 variants = []
@@ -294,17 +303,21 @@ def find_weight(fields, my_unit, win_line_length, weights):
                                 break
                             if fields[row + i][column + i] == unit_1:
                                 number_of_my_units += 1
+                                checked_cells.append((row + i, column + i))
                             if fields[row + i][column + i] == unit_2:
                                 variants = []
                                 break
                             if fields[row + i][column + i] == empty:
                                 variants.append((row + i, column + i))
-                        calc_weight(variants, weights, number_of_my_units, unit_1)
+                        calc_weight(variants, weights, number_of_my_units, unit_1, checked_cells)
+                        if number_of_my_units == win_line_length:
+                            return {'status': 'won', 'cells': checked_cells}
 
                     # diagonal right top
                     for j in range(win_line_length):
                         number_of_my_units = 0
                         variants = []
+                        checked_cells = []
                         for i in range(-j, -j + win_line_length):
                             if row + i >= length_of_side:
                                 variants = []
@@ -320,12 +333,15 @@ def find_weight(fields, my_unit, win_line_length, weights):
                                 break
                             if fields[row + i][column - i] == unit_1:
                                 number_of_my_units += 1
+                                checked_cells.append((row + i, column - i))
                             if fields[row + i][column - i] == unit_2:
                                 variants = []
                                 break
                             if fields[row + i][column - i] == empty:
                                 variants.append((row + i, column - i))
-                        calc_weight(variants, weights, number_of_my_units, unit_1)
+                        calc_weight(variants, weights, number_of_my_units, unit_1, checked_cells)
+                        if number_of_my_units == win_line_length:
+                            return {'status': 'won', 'cells': checked_cells}
 
     empty = '.'
     if my_unit == 'x':
@@ -336,8 +352,12 @@ def find_weight(fields, my_unit, win_line_length, weights):
 
     # unit_1 = my_unit
     # unit_2 = enemy_unit
-    compute(weights, my_unit, enemy_unit)
-    compute(weights, enemy_unit, my_unit)
+    c = compute(weights, my_unit, enemy_unit)
+    if c:
+        return c
+    c = compute(weights, enemy_unit, my_unit)
+    if c:
+        return c
 
     for row in range(0, len(weights)):
         for column in range(0, len(weights[row])):
@@ -353,13 +373,13 @@ def find_weight(fields, my_unit, win_line_length, weights):
             x = random.randint(len(fields) // 3, (len(fields) - 1) // 3 * 2)
             y = random.randint(len(fields) // 3, (len(fields) - 1) // 3 * 2)
             if fields[y][x] == empty:
-                return (y, x)
+                return {'status': 'game_on', 'move': (y, x)}
 
     print_field(weights)
     for row in range(0, len(weights)):
         for column in range(0, len(weights[row])):
             if weights[row][column] == max_weight:
-                return (row, column)
+                return {'status': 'game_on', 'move': (row, column)}
 
 
 if __name__ == "__main__":
@@ -392,6 +412,18 @@ if __name__ == "__main__":
         '. . . . . . . . . x',
         '. . . . . . . . . x',
     ]
+    f = [
+        '. . . . . . . . . .',
+        '. . . . . . . . . .',
+        '. . . . . . . . . .',
+        '. . . . . . . . . .',
+        '. . . . . . . . . .',
+        '. . . . . . . . . .',
+        '. . . . . . . . . .',
+        '. . . x x x x . . .',
+        '. . . . . . . . . .',
+        '. . . . . . . . . .',
+    ]
     f1 = [x.split(' ') for x in f]
     # print(f"{f1 = }")
     fields = f1
@@ -417,6 +449,7 @@ if __name__ == "__main__":
     res = find_weight(fields, 'x', 5, weights)
 
     print_field(weights)
+    print()
     print(f"{res = }")
 
     # units = ('x', 'o')
