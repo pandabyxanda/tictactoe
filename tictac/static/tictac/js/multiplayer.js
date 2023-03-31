@@ -12,6 +12,7 @@ let unit = null;
 
 
 function join_lobby_clicked() {
+    console.log('join_lobby_clicked called');
     const player_name = document.querySelector('#player_name').value;
     player_id = (Math.random() + 1).toString(36).substring(2);
     if (joined_lobby == false) {
@@ -256,8 +257,9 @@ function automatch_clicked() {
 };
 
 function Ffunc(x) {
+    console.log('Ffunc called');
     if (game_started == true) {
-        if (list_fields[x]['value'] == " " && turn == 'Your turn') {
+        if (list_fields[x]['value'] == "." && turn == 'Your turn') {
             document.getElementById("field_"+x).innerHTML = unit;
             document.getElementById("field_"+x).className ='button_field_not_allowed';
             list_fields[x]['value'] = unit;

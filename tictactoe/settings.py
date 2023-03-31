@@ -24,7 +24,7 @@ KEY = os.environ.get("SECRET_KEY", default=None)
 if KEY:
     SECRET_KEY = str(KEY)
 else:
-    from secret_key import TTT_DJANGO_SECRET_KEY as SECRET_KEY
+    from secret_key import SECRET_KEY as SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', default=1)
@@ -46,8 +46,7 @@ CSRF_COOKIE_SECURE = False
 # Application definition
 
 INSTALLED_APPS = [
-    # "daphne",
-    # "gunicorn",
+    "daphne",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -95,14 +94,15 @@ ASGI_APPLICATION = 'tictactoe.asgi.application'
 #     },
 # }
 
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("127.0.0.1", 6379)],
-#         },
-#     },
-# }
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            # "hosts": [("127.0.0.1", 6379)],
+            "hosts": [("redis", 6379)],
+        },
+    },
+}
 
 
 # Database

@@ -9,13 +9,25 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /app/
 
 # Копирует все файлы из нашего локального проекта в контейнер
-ADD . /app/
+#ADD ./../../../ /app/
 
+# . is configured by context in docker-compose
+COPY . .
+
+#ADD . .
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
-COPY ./entrypoint.sh /
+#COPY entrypoint.sh /
 
-ENTRYPOINT ["sh", "/entrypoint.sh"]
+EXPOSE 8000 8001
+#CMD 'pwd'
+#CMD 'ls' '-la'
+#CMD pwd
+CMD ls -la
+#ENTRYPOINT ["pwd"]
+#ENTRYPOINT ["ls"]
+RUN chmod +x ./Docker/Prod/web/entrypoint.sh
+ENTRYPOINT ["sh", "./Docker/Prod/web/entrypoint.sh"]
 
 
 

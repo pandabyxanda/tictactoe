@@ -12,6 +12,7 @@
                 {% for f in list_fields %}
                 <button class="button_field_not_allowed" id="field_{{f.index}}" onclick="Ffunc({{f.index}})">
                     {{f.value}}
+
                     <!--                {{f.index}}-->
                 </button>
                 {% endfor %}
@@ -27,6 +28,7 @@
         let session_key = "{{ session_key }}";
 
     </script>
+
     <script src="{% static 'tictac/js/multiplayer.js' %}">
     </script>
 

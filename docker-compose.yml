@@ -1,26 +1,119 @@
 version: '3.8'
 services:
-  dj_gunicorn_1:
+  dj_ws1:
+#    restart: always
     volumes:
       - static:/static
     env_file:
-      - .env
+      - ./Docker/Prod/env/.env
     build:
       context: .
+      dockerfile: ./Docker/Prod/web/Dockerfile
     ports:
       - 8000:8000
+      - 8001:8001
+    depends_on:
+      - redis
 
   nginx:
-    build: ./nginx
+#    restart: always
+    build:
+      context: .
+      dockerfile: ./Docker/Prod/nginx/Dockerfile
     volumes:
       - static:/static
     ports:
       - 80:80
     depends_on:
-      - dj_gunicorn_1
+      - dj_ws1
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
 
 volumes:
   static:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# deploy on server. Runserver via daphne
+#version: '3.8'
+#services:
+#  dj_daphne_1:
+#    volumes:
+#      - static:/static
+#    env_file:
+#      - .env
+#    build:
+#      context: .
+#    ports:
+#      - 8000:8000
+#
+#  redis:
+#    image: redis
+#    ports:
+#      - 6379:6379
+#
+#volumes:
+#  static:
+
+
+
+
+
+
+
+
+
+
+
+#version: '3.8'
+#services:
+#
+#  djdaphne1:
+#    image: pandabyxanda/dj_daphne1
+#    restart: always
+#    volumes:
+#      - static:/static
+#    environment:
+#      - DJANGO_ALLOWED_HOSTS=45.8.251.243
+#    build:
+#      context: .
+#    ports:
+#      - 8000:8000
+#
+#  redis:
+#    image: redis
+#    ports:
+#      - 6379:6379
+#
+#volumes:
+#  static:
+
+
+
+
+
+
+
+
+
+
+
 
 
 
